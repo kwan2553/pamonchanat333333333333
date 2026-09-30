@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Notes - แอปบันทึกโน้ตอัจฉริยะ (Auto-save)</title>
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS File -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><i class="fa-solid fa-note-sticky"></i> Smart Notes</h1>
+        <p>บันทึก จัดหมวดหมู่ และปักหมุดโน้ตสำคัญของคุณ (ระบบบันทึกอัตโนมัติ)</p>
+    </header>
+
+    <!-- ฟอร์มสร้าง/แก้ไขโน้ต -->
+    <div class="note-form" id="form-container">
+        <input type="hidden" id="note-id">
+        <div class="input-group">
+            <input type="text" id="note-title" placeholder="หัวข้อโน้ต..." oninput="autoSaveNote()">
+        </div>
+        <div class="input-group">
+            <textarea id="note-content" placeholder="พิมพ์เนื้อหาโน้ตของคุณที่นี่..." oninput="autoSaveNote()"></textarea>
+        </div>
+        
+        <div class="form-controls">
+            <!-- ตัวเลือกหมวดหมู่ -->
+            <select id="note-category" style="width: auto;" onchange="autoSaveNote()">
+                <option value="ทั่วไป">หมวดหมู่: ทั่วไป</option>
+                <option value="งาน">หมวดหมู่: งาน</option>
+                <option value="ส่วนตัว">หมวดหมู่: ส่วนตัว</option>
+                <option value="เรียน">หมวดหมู่: เรียน</option>
+            </select>
+
+            <!-- ตัวเลือกสีการ์ด -->
+            <div class="color-picker">
+                <span style="font-size: 12px; color: #666;">สี:</span>
+                <div class="color-option selected" style="background: #ffffff;" data-color="#ffffff" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #fff3cd;" data-color="#fff3cd" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #d1e7dd;" data-color="#d1e7dd" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #cff4fc;" data-color="#cff4fc" onclick="selectColor(this)"></div>
+                <div class="color-option" style="background: #f8d7da;" data-color="#f8d7da" onclick="selectColor(this)"></div>
+            </div>
+
+            <!-- สถานะ Auto-save และปุ่มล้างฟอร์ม -->
+            <div class="btn-group">
+                <span class="auto-save-status" id="save-status"><i class="fa-solid fa-check"></i> บันทึกแล้ว</span>
+                <button class="btn btn-cancel" id="cancel-btn" onclick="resetForm()">เสร็จสิ้น / สร้างโน้ตใหม่</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- แถบค้นหาและกรองข้อมูล -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 ค้นหาตามหัวข้อหรือเนื้อหา..." oninput="renderNotes()">
+        <select id="filter-category" onchange="renderNotes()">
+            <option value="ทั้งหมด">แสดงทุกหมวดหมู่</option>
+            <option value="ทั่วไป">ทั่วไป</option>
+            <option value="งาน">งาน</option>
+            <option value="ส่วนตัว">ส่วนตัว</option>
+            <option value="เรียน">เรียน</option>
+        </select>
+    </div>
+
+    <!-- พื้นที่แสดงโน้ต -->
+    <div class="notes-grid" id="notes-container"></div>
+</div>
+
+<!-- JS File -->
+<script src="script.js"></script>
+
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registered!'))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        });
+    }
+</script>
+
+</body>
+</html>
